@@ -1,0 +1,79 @@
+#!/bin/bash
+sudo apt -y update
+sudo apt -y install nginx install wget unzip php mariadb
+
+echo "====================================="
+echo "create config and root directory nginx"
+mkdir -p ~/www/config ~/www/public_html
+echo "folder created"
+echo "====================================="
+
+echo "====================================="
+echo "copy default configuration to config "
+cp /etc/nginx/sites-available/default ~/www/config/default
+echo "copied"
+echo "====================================="
+
+clear
+echo "++++++++++++++++++++++++++++++++++++++++"
+echo "1. Create Virtual Host"
+echo "2. Install WordPress"
+echo "3. Exit"
+echo "++++++++++++++++++++++++++++++++++++++++"
+
+read -p "Please insert with number: " choice
+
+function create_virtual_host {
+	read -p "Input domain name (tux.co.id) : " domain_name
+	mkdir -p ~/www/public_html/$domain_name
+
+	echo "$domain_name" > ~/www/public_html/$domain_name/index.php
+
+	cp ~/www/config/default ~/www/config/$domain_name
+	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name
+
+	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name;/g" ~/www/config/$domain_name
+	
+	echo "172.0.0.1 $domain_name" | sudo tee -a /etc/hosts
+	echo "done, you can type $domain_name on your browser" 
+}
+
+
+function install_wordpress {
+	read -p "Input domain name (tux.co.id) : " domain_name
+	mkdir -p ~/www/public_html/$domain_name
+
+	cp ~/www/config/default ~/www/config/$domain_name
+	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name
+
+	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name\/wordpress;/g" ~/www/config/$domain_name
+	
+	echo "172.0.0.1 $domain_name" | sudo tee -a /etc/hosts
+	wget -P ~/www/public_html/$domain_name https://wordpress.org/latest.zip 
+	
+	unzip ~/www/public_html/$domain_name/latest.zip  -d ~/www/public_html/$domain_name/
+
+	rm ~/www/public_html/$domain_name/latest.zip
+
+	echo "done, you can type $domain_name on your browser" 
+}
+
+case $choice in 
+	1)
+		clear
+		create_virtual_host
+		;;
+	2)
+		clear
+		install_wordpress
+		;;
+	3) 
+		exit
+		;;
+	*)
+		echo "hmmmm why are you gay?"
+		exit
+esac
+
+#create_virtual_host
+#install_wordpress
