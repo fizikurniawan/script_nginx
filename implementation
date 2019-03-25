@@ -1,3 +1,4 @@
+# ahcr007
 #!/bin/bash
 sudo apt -y update
 sudo apt -y install nginx install wget unzip php mariadb
@@ -29,10 +30,10 @@ function create_virtual_host {
 
 	echo "$domain_name" > ~/www/public_html/$domain_name/index.php
 
-	cp ~/www/config/default ~/www/config/$domain_name
-	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name
+	cp ~/www/config/default ~/www/config/$domain_name.conf
+	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name.conf
 
-	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name;/g" ~/www/config/$domain_name
+	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name;/g" ~/www/config/$domain_name.conf
 	
 	echo "172.0.0.1 $domain_name" | sudo tee -a /etc/hosts
 	echo "done, you can type $domain_name on your browser" 
@@ -43,10 +44,10 @@ function install_wordpress {
 	read -p "Input domain name (tux.co.id) : " domain_name
 	mkdir -p ~/www/public_html/$domain_name
 
-	cp ~/www/config/default ~/www/config/$domain_name
-	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name
+	cp ~/www/config/default ~/www/config/$domain_name.conf
+	sed -i "s/_;/$domain_name;/g" ~/www/config/$domain_name.conf
 
-	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name\/wordpress;/g" ~/www/config/$domain_name
+	sed -i "s/\/var\/www\/html;/\~\/www\/public_html\/$domain_name\/wordpress;/g" ~/www/config/$domain_name.conf
 	
 	echo "172.0.0.1 $domain_name" | sudo tee -a /etc/hosts
 	wget -P ~/www/public_html/$domain_name https://wordpress.org/latest.zip 
@@ -75,5 +76,3 @@ case $choice in
 		exit
 esac
 
-#create_virtual_host
-#install_wordpress
